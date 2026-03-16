@@ -15,26 +15,27 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.events.challenge.presentation.ItemViewModel
 import com.events.challenge.ui.theme.ChallengeTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             ChallengeTheme {
-                // todo this will be read for a viewmodel
-                val list = mutableListOf(
-                    ItemUi("one", "description"),
-                    ItemUi("two", "description"),
-                    ItemUi("three", "description"),
-                    ItemUi("four", "description")
-                )
-
+                val viewModel: ItemViewModel = hiltViewModel()
+                val list by viewModel.uiState.collectAsState()
+                
                 val context = LocalContext.current
 
                 Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
@@ -43,21 +44,19 @@ class MainActivity : ComponentActivity() {
                     LazyColumn(Modifier
                         .fillMaxSize()
                         .padding(innerPadding)) {
-                        items(list) {
+                        items(list) { item ->
                             ItemView(
-                                title = it.title,
-                                description = it.description,
+                                title = item.title,
+                                description = item.description,
                                 onClick = {
                                     Toast.makeText(
                                         context,
-                                        "Display toast :: $it",
+                                        "Display toast :: ${item.title}",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 })
                         }
                     }
-
-
                 }
             }
         }
