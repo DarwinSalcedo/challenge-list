@@ -1,5 +1,8 @@
 package com.events.challenge.domain
 
+import kotlinx.coroutines.flow.Flow
+
 interface ItemRepository {
-    fun getItems(): List<ItemModel>
+   suspend fun getItems(): Flow<Result<List<ItemModel>>>
+   val number: Int
 }

@@ -1,6 +1,7 @@
 package com.events.challenge.presentation
 
 import androidx.lifecycle.ViewModel
+import com.events.challenge.domain.GetItemsUseCase
 import com.events.challenge.domain.ItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -17,13 +18,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ItemViewModel @Inject constructor(
-    private val itemRepository: ItemRepository
+    private val getItemsUseCase: GetItemsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ItemUiState>(ItemUiState.Loading)
     val uiState: StateFlow<ItemUiState> = _uiState.asStateFlow()
 
-    private val _sideEffect = MutableSharedFlow<ItemSideEffect>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val _sideEffect = MutableSharedFlow<ItemSideEffect>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
     val sideEffect = _sideEffect
 
     init {
@@ -44,8 +48,21 @@ class ItemViewModel @Inject constructor(
     private fun loadItems() {
         viewModelScope.launch {
             _uiState.value = ItemUiState.Loading
-            val items = itemRepository.getItems()
-            _uiState.value = ItemUiState.Success(items)
+            getItemsUseCase().collect { result ->
+                result.fold(
+                    onSuccess = { items ->
+                        if (items.isEmpty()) {
+                            _uiState.value = ItemUiState.Error("No items found")
+                        } else {
+                            _uiState.value = ItemUiState.Success(items)
+                        }
+                    },
+                    onFailure = { error ->
+                        _uiState.value =
+                            ItemUiState.Error(error.message ?: "Unknown error occurred")
+                    }
+                )
+            }
         }
     }
 }
