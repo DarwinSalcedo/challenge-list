@@ -4,4 +4,7 @@
     <string name="loading_items">Loading items...</string>
     <string name="retry">Retry</string>
     <string name="error">Error: %1$s</string>
+    <string name="no_items_found">No items found</string>
+    <string name="unknown_error_occurred">Unknown error occurred</string>
+    <string name="display_toast">Display toast :: %1$s</string>
 </resources>

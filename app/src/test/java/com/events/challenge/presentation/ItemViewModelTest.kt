@@ -1,5 +1,8 @@
 package com.events.challenge.presentation
 
+import com.events.challenge.R
+import com.events.challenge.core.FakeStringProvider
+import com.events.challenge.core.StringProvider
 import com.events.challenge.domain.GetItemsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,6 +25,7 @@ class ItemViewModelTest {
 
     private lateinit var fakeRepository: FakeItemRepository
     private lateinit var useCase: GetItemsUseCase
+    private lateinit var fakeStringProvider: FakeStringProvider
     private lateinit var viewModel: ItemViewModel
 
     @Before
@@ -30,6 +34,7 @@ class ItemViewModelTest {
 
         fakeRepository = FakeItemRepository()
         useCase = GetItemsUseCase(fakeRepository)
+        fakeStringProvider = FakeStringProvider()
     }
 
     @After
@@ -42,7 +47,7 @@ class ItemViewModelTest {
         runTest(testDispatcher) {
             fakeRepository.shouldReturnError = false
 
-            viewModel = ItemViewModel(useCase)
+            viewModel = ItemViewModel(useCase, fakeStringProvider)
 
             advanceUntilIdle()
 
@@ -58,7 +63,7 @@ class ItemViewModelTest {
         runTest(testDispatcher) {
             fakeRepository.shouldReturnError = true
 
-            viewModel = ItemViewModel(useCase)
+            viewModel = ItemViewModel(useCase, fakeStringProvider)
 
             advanceUntilIdle()
 

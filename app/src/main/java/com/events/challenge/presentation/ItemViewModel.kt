@@ -1,6 +1,8 @@
 package com.events.challenge.presentation
 
 import androidx.lifecycle.ViewModel
+import com.events.challenge.R
+import com.events.challenge.core.StringProvider
 import com.events.challenge.domain.GetItemsUseCase
 import com.events.challenge.domain.ItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ItemViewModel @Inject constructor(
-    private val getItemsUseCase: GetItemsUseCase
+    private val getItemsUseCase: GetItemsUseCase,
+    private val stringProvider: StringProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ItemUiState>(ItemUiState.Loading)
@@ -39,7 +42,7 @@ class ItemViewModel @Inject constructor(
             is ItemAction.LoadItems -> loadItems()
             is ItemAction.ItemClicked -> {
                 viewModelScope.launch {
-                    _sideEffect.emit(ItemSideEffect.ShowToast("Display toast :: ${action.item.title}"))
+                    _sideEffect.emit(ItemSideEffect.ShowToast(stringProvider.getString(R.string.display_toast, action.item.title)))
                 }
             }
         }
@@ -52,14 +55,14 @@ class ItemViewModel @Inject constructor(
                 result.fold(
                     onSuccess = { items ->
                         if (items.isEmpty()) {
-                            _uiState.value = ItemUiState.Error("No items found")
+                            _uiState.value = ItemUiState.Error(stringProvider.getString(R.string.no_items_found))
                         } else {
                             _uiState.value = ItemUiState.Success(items)
                         }
                     },
                     onFailure = { error ->
                         _uiState.value =
-                            ItemUiState.Error(error.message ?: "Unknown error occurred")
+                            ItemUiState.Error(error.message ?: stringProvider.getString(R.string.unknown_error_occurred))
                     }
                 )
             }
