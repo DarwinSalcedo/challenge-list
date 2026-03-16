@@ -16,15 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.events.challenge.R
-import com.events.challenge.presentation.ItemAction
 import com.events.challenge.presentation.ItemUiState
-import com.events.challenge.presentation.ItemViewModel
 
 @Composable
 fun ErrorView(
     innerPadding: PaddingValues,
     state: ItemUiState.Error,
-    viewModel: ItemViewModel
+    onRetry: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -38,7 +36,7 @@ fun ErrorView(
             color = MaterialTheme.colorScheme.error
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { viewModel.handleAction(ItemAction.LoadItems) }) {
+        Button(onClick = onRetry) {
             Text(stringResource(R.string.retry))
         }
     }

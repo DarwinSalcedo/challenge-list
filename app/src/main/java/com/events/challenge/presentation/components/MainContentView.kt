@@ -9,16 +9,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.events.challenge.presentation.ItemAction
+import com.events.challenge.domain.ItemModel
 import com.events.challenge.presentation.ItemUiState
-import com.events.challenge.presentation.ItemViewModel
 
 
 @Composable
 fun MainContentView(
     innerPadding: PaddingValues,
     state: ItemUiState.Success,
-    viewModel: ItemViewModel
+    onItemClick: (ItemModel) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -31,9 +30,7 @@ fun MainContentView(
             ItemView(
                 title = item.title,
                 description = item.description,
-                onClick = {
-                    viewModel.handleAction(ItemAction.ItemClicked(item))
-                }
+                onClick = { onItemClick(item) }
             )
         }
     }

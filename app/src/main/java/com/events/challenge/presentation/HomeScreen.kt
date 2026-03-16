@@ -57,11 +57,19 @@ fun HomeScreen() {
                 }
 
                 is ItemUiState.Error -> {
-                    ErrorView(innerPadding, state, viewModel)
+                    ErrorView(
+                        innerPadding = innerPadding,
+                        state = state,
+                        onRetry = { viewModel.handleAction(ItemAction.LoadItems) }
+                    )
                 }
 
                 is ItemUiState.Success -> {
-                    MainContentView(innerPadding, state, viewModel)
+                    MainContentView(
+                        innerPadding = innerPadding,
+                        state = state,
+                        onItemClick = { viewModel.handleAction(ItemAction.ItemClicked(it)) }
+                    )
                 }
             }
         }
